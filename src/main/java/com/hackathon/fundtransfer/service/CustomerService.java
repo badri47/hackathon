@@ -2,7 +2,6 @@ package com.hackathon.fundtransfer.service;
 
 import com.hackathon.fundtransfer.entity.Customer;
 import com.hackathon.fundtransfer.dtos.PayloadResponse;
-import com.hackathon.fundtransfer.exception.DetailsNotFoundException;
 import com.hackathon.fundtransfer.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -46,7 +45,7 @@ public class CustomerService implements UserDetailsService {
      * This method is override method from UserDetailsService to map the user details using username
      * @param username Customer Name
      * @return User details
-     * @throws UsernameNotFoundException
+     * @throws UsernameNotFoundException UserName Not Found Exception
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

@@ -67,7 +67,7 @@ public class AccountServiceTest {
 
         when(this.accountRepository.save(account)).thenReturn(account);
 
-        Account account1 = accountService.createAccountForCustomer(username,account);
+        accountService.createAccountForCustomer(username,account);
 
         assertThrows(NullPointerException.class, () ->  {
             throw new NullPointerException("Customer Id should not be null");
@@ -78,9 +78,7 @@ public class AccountServiceTest {
     void createAccountUnAuthorizedCustomer() {
         String username = "testuser";
 
-        assertThrows(UnAuthorizedException.class, () ->  {
-            accountService.createAccountForCustomer(username,account);
-        });
+        assertThrows(UnAuthorizedException.class, () -> accountService.createAccountForCustomer(username,account));
     }
 
     @Test
@@ -89,9 +87,7 @@ public class AccountServiceTest {
 
         when(this.accountRepository.findByAccountNumber(anyString())).thenReturn(Optional.of(account));
 
-        assertThrows(CustomException.class, () ->  {
-            accountService.createAccountForCustomer(username,account);
-        });
+        assertThrows(CustomException.class, () -> accountService.createAccountForCustomer(username,account));
     }
 
     @Test

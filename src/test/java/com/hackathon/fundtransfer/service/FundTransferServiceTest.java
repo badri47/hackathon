@@ -80,7 +80,7 @@ public class FundTransferServiceTest {
     }
 
     @Test
-    void transferFundsUnAuthorizedCustomer() throws Exception {
+    void transferFundsUnAuthorizedCustomer() {
         String username = "test2";
         Account fromAcc = Account.builder().accountId(1L).accountNumber("118002")
                 .accountType("SAVINGS").balance(5000.0).customer(customer).build();
@@ -96,13 +96,11 @@ public class FundTransferServiceTest {
         when(this.accountRepository.findByAccountNumber(fundTransfer.getToAccount()))
                 .thenReturn(Optional.of(toAcc));
 
-        assertThrows(UnAuthorizedException.class, () ->{
-            fundTransferService.transferFunds(username, fundTransfer);
-        });
+        assertThrows(UnAuthorizedException.class, () -> fundTransferService.transferFunds(username, fundTransfer));
     }
 
     @Test
-    void transferFundsInsufficientFunds() throws Exception {
+    void transferFundsInsufficientFunds() {
         String username = "test";
 
         Account fromAcc = Account.builder().accountId(1L).accountNumber("118002")
@@ -122,9 +120,7 @@ public class FundTransferServiceTest {
         fundTransfer.setTransactionId(1L);
         fundTransfer.setLocalDateTime(LocalDateTime.now());
 
-        assertThrows(CustomException.class, () -> {
-            fundTransferService.transferFunds(username, fundTransfer);
-        });
+        assertThrows(CustomException.class, () -> fundTransferService.transferFunds(username, fundTransfer));
 
     }
 
@@ -161,9 +157,7 @@ public class FundTransferServiceTest {
 
         when(this.accountRepository.findByAccountNumber("118002")).thenReturn(Optional.empty());
 
-        assertThrows(DetailsNotFoundException.class, () -> {
-            fundTransferService.getTransactionsList(username, "118002");
-        });
+        assertThrows(DetailsNotFoundException.class, () -> fundTransferService.getTransactionsList(username, "118002"));
     }
 
     @Test
@@ -179,9 +173,7 @@ public class FundTransferServiceTest {
 
         when(this.accountRepository.findByAccountNumber(account.getAccountNumber())).thenReturn(Optional.of(account));
 
-        assertThrows(UnAuthorizedException.class, () -> {
-            fundTransferService.getTransactionsList(username, "118002");
-        });
+        assertThrows(UnAuthorizedException.class, () -> fundTransferService.getTransactionsList(username, "118002"));
     }
 
 }

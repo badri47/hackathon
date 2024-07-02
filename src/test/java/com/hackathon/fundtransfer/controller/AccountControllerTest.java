@@ -1,6 +1,5 @@
 package com.hackathon.fundtransfer.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hackathon.fundtransfer.entity.Account;
 import com.hackathon.fundtransfer.entity.Customer;

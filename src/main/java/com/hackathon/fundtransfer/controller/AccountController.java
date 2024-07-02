@@ -1,7 +1,6 @@
 package com.hackathon.fundtransfer.controller;
 
 import com.hackathon.fundtransfer.entity.Account;
-import com.hackathon.fundtransfer.entity.Customer;
 import com.hackathon.fundtransfer.service.AccountService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;

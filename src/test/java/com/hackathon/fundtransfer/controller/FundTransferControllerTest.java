@@ -2,7 +2,6 @@ package com.hackathon.fundtransfer.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hackathon.fundtransfer.dtos.PayloadResponse;
-import com.hackathon.fundtransfer.entity.Account;
 import com.hackathon.fundtransfer.entity.Customer;
 import com.hackathon.fundtransfer.entity.FundTransfer;
 import com.hackathon.fundtransfer.service.FundTransferService;
@@ -38,14 +37,11 @@ public class FundTransferControllerTest {
 
     @MockBean
     private FundTransferService fundTransferService;
-
-    private Customer customer;
-
     private FundTransfer fundTransfer;
 
     @BeforeEach
     public void setup() {
-        customer = Customer.builder().id(12L).username("test").build();
+        Customer customer = Customer.builder().id(12L).username("test").build();
         fundTransfer = FundTransfer.builder().transactionId(1L).fromAccount("118002").toAccount("988960").amount(500.0)
                 .customer(customer).build();
     }
