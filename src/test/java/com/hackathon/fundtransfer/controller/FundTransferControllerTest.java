@@ -2,6 +2,7 @@ package com.hackathon.fundtransfer.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hackathon.fundtransfer.dtos.PayloadResponse;
+import com.hackathon.fundtransfer.dtos.TransactionResponse;
 import com.hackathon.fundtransfer.entity.Customer;
 import com.hackathon.fundtransfer.entity.FundTransfer;
 import com.hackathon.fundtransfer.service.FundTransferService;
@@ -16,6 +17,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -96,7 +98,13 @@ public class FundTransferControllerTest {
     public void transactionsListSuccess() throws Exception {
         String username = "test";
 
-        List<FundTransfer> transactionsList = Collections.singletonList(fundTransfer);
+        TransactionResponse transactionResponse = new TransactionResponse();
+        transactionResponse.setTransactionId(1L);
+        transactionResponse.setFromAccount("118002");
+        transactionResponse.setToAccount("980058");
+        transactionResponse.setAmount(5000.0);
+        transactionResponse.setLocalDateTime(LocalDateTime.now());
+        List<TransactionResponse> transactionsList = Collections.singletonList(transactionResponse);
         String accountNumber = "213546";
         when(this.fundTransferService.getTransactionsList(username, accountNumber)).thenReturn(transactionsList);
 

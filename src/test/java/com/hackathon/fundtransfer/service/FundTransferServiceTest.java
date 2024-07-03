@@ -1,5 +1,6 @@
 package com.hackathon.fundtransfer.service;
 
+import com.hackathon.fundtransfer.dtos.TransactionResponse;
 import com.hackathon.fundtransfer.entity.Account;
 import com.hackathon.fundtransfer.entity.Customer;
 import com.hackathon.fundtransfer.entity.FundTransfer;
@@ -143,7 +144,9 @@ public class FundTransferServiceTest {
         when(this.fundTransferRepository.findByFromAccountOrToAccount(account.getAccountNumber(),
                 account.getAccountNumber())).thenReturn(transactionsList);
 
-        List<FundTransfer> transactionsList1 = fundTransferService.getTransactionsList(username, account.getAccountNumber());
+        TransactionResponse transactionResponse = new TransactionResponse(1L, "118005", "988002", 5000.0, LocalDateTime.now());
+
+        List<TransactionResponse> transactionsList1 = fundTransferService.getTransactionsList(username, account.getAccountNumber());
 
         assertEquals(transactionsList1.size(), transactionsList.size());
 

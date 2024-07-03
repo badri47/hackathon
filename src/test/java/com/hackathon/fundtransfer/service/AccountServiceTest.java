@@ -108,8 +108,8 @@ public class AccountServiceTest {
     void showBalanceFail() {
         String username = "";
 
-        customer = new Customer();
         account = new Account();
+        account.setCustomer(customer);
         List<Account> accountList = Collections.singletonList(account);
         when(this.customerRepository.findByUsername(username)).thenReturn(Optional.ofNullable(customer));
 

@@ -50,6 +50,16 @@ public class AccountService {
     public List<Account> showBalance(String username) {
         Customer customer = customerRepository.findByUsername(username)
                 .orElseThrow(() -> new CustomException("Customer Not Found"));
-        return accountRepository.findByCustomerId(customer.getId());
+        List<Account> accountList = accountRepository.findByCustomerId(customer.getId());
+        if (accountList.isEmpty()) {
+            return accountList;
+        } else {
+           return accountList.stream().peek(account -> {
+                Customer customer1 = new Customer();
+                customer1.setId(account.getCustomer().getId());
+                customer1.setUsername(account.getCustomer().getUsername());
+                account.setCustomer(customer1);
+            }).toList();
+        }
     }
 }

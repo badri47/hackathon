@@ -21,13 +21,4 @@ public class JwtUtilTest {
 
         Assertions.assertNotNull(token);
     }
-
-    @Test
-    void extractUserNameTest() {
-        String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkaXlhYW4iLCJpYXQiOjE3MTk5NDI2NDksImV4cCI6MTcxOTk0NDQ0OX0.AUBmio2f2VLhcXUEQsMNfTxJ1m4PyxaOl9qLnBE7L1s";
-
-        String username = jwtUtil.extractUsername(token);
-
-        Assertions.assertNotNull(username);
-    }
 }

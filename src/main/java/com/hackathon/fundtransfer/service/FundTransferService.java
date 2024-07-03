@@ -1,5 +1,6 @@
 package com.hackathon.fundtransfer.service;
 
+import com.hackathon.fundtransfer.dtos.TransactionResponse;
 import com.hackathon.fundtransfer.entity.Account;
 import com.hackathon.fundtransfer.entity.Customer;
 import com.hackathon.fundtransfer.entity.FundTransfer;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FundTransferService {
@@ -73,15 +75,24 @@ public class FundTransferService {
      * @param accountNumber Account Number
      * @return Transactions List
      */
-    public List<FundTransfer> getTransactionsList(String username, String accountNumber) {
-        List<FundTransfer> transactionsList;
+    public List<TransactionResponse> getTransactionsList(String username, String accountNumber) {
+        List<TransactionResponse> transactionsList;
         Customer customer = customerRepository.findByUsername(username)
                 .orElseThrow(() -> new CustomException("Customer Not Found"));
         Account account = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new DetailsNotFoundException("Account Details not Found"));
         if (account.getCustomer().getId().equals(customer.getId())) {
-            transactionsList = fundTransferRepository.
+            List<FundTransfer> fundTransferList = fundTransferRepository.
                     findByFromAccountOrToAccount(accountNumber, accountNumber);
+            transactionsList = fundTransferList.stream().map(fundTransfer -> {
+                TransactionResponse transactionResponse = new TransactionResponse();
+                transactionResponse.setTransactionId(fundTransfer.getTransactionId());
+                transactionResponse.setFromAccount(fundTransfer.getFromAccount());
+                transactionResponse.setToAccount(fundTransfer.getToAccount());
+                transactionResponse.setAmount(fundTransfer.getAmount());
+                transactionResponse.setLocalDateTime(fundTransfer.getLocalDateTime());
+                return transactionResponse;
+            }).collect(Collectors.toList());
         } else {
             throw new UnAuthorizedException("UnAuthorized Request");
         }
