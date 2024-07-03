@@ -4,7 +4,6 @@ import com.hackathon.fundtransfer.dtos.AuthRequest;
 import com.hackathon.fundtransfer.dtos.CustomerRequest;
 import com.hackathon.fundtransfer.dtos.LoginResponse;
 import com.hackathon.fundtransfer.dtos.PayloadResponse;
-import com.hackathon.fundtransfer.entity.Customer;
 import com.hackathon.fundtransfer.service.CustomerService;
 import com.hackathon.fundtransfer.util.JwtUtil;
 import jakarta.validation.Valid;
@@ -54,7 +53,7 @@ public class AuthController {
      * @throws Exception exception
      */
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> createAuthenticationToken(@Valid @RequestBody AuthRequest authRequest) throws Exception {
+    public ResponseEntity<LoginResponse> createAuthenticationToken(@Valid @RequestBody AuthRequest authRequest) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
         var loginResponse = new LoginResponse();
         SecurityContextHolder.getContext().setAuthentication(authentication);

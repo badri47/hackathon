@@ -1,7 +1,6 @@
 package com.hackathon.fundtransfer.exception;
 
 import io.jsonwebtoken.ExpiredJwtException;
-import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;

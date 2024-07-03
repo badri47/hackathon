@@ -5,7 +5,6 @@ import com.hackathon.fundtransfer.dtos.AuthRequest;
 import com.hackathon.fundtransfer.dtos.CustomerRequest;
 import com.hackathon.fundtransfer.dtos.LoginResponse;
 import com.hackathon.fundtransfer.dtos.PayloadResponse;
-import com.hackathon.fundtransfer.entity.Customer;
 import com.hackathon.fundtransfer.service.CustomerService;
 import com.hackathon.fundtransfer.util.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;

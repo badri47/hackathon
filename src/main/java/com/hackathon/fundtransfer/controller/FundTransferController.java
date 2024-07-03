@@ -2,6 +2,7 @@ package com.hackathon.fundtransfer.controller;
 
 import com.hackathon.fundtransfer.dtos.PayloadResponse;
 import com.hackathon.fundtransfer.entity.FundTransfer;
+import com.hackathon.fundtransfer.exception.CustomException;
 import com.hackathon.fundtransfer.service.FundTransferService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,9 @@ public class FundTransferController {
                                                          @RequestBody @Valid FundTransfer fundTransfer) throws Exception {
         var payloadResponse = new PayloadResponse();
         String username = principal.getName();
+        if (fundTransfer.getAmount() <= 0) {
+            throw new CustomException("Amount should be greater than 0");
+        }
         FundTransfer fundTransfer1 = fundTransferService.transferFunds(username, fundTransfer);
 
         payloadResponse.setMessage("Transaction Successful with Transaction Id : "+fundTransfer1.getTransactionId());
