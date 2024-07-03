@@ -10,7 +10,7 @@ import java.util.List;
 
 public class CustomerDetails implements UserDetails {
 
-    private String username;
+    private String  username;
     private String password;
     private List<GrantedAuthority> authorities;
 

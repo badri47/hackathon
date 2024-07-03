@@ -72,11 +72,6 @@ public class GlobalExceptionHandler {
             problemDetail.setProperty("description", "The JWT token has expired");
         }
 
-        if(ex instanceof ConstraintViolationException) {
-            problemDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(400), ex.getMessage());
-            problemDetail.setProperty("description", "Customer details required");
-        }
-
         if (problemDetail == null) {
             problemDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(500), ex.getMessage());
             problemDetail.setProperty("description", "Unknown internal server error.");

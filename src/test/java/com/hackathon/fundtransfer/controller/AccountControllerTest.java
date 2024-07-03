@@ -62,23 +62,6 @@ public class AccountControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "test")
-    public void createAccountFail() throws Exception {
-        String username = "test";
-        Customer customer = Customer.builder().id(12L).username("test").build();
-        Account account = Account.builder().accountType("SAVINGS").balance(100.05)
-                .customer(customer).build();
-
-        when(this.accountService.createAccountForCustomer(username, account)).thenReturn(account);
-
-        this.mockMvc.perform(post("/account/")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .with(csrf())
-                        .content(objectMapper.writeValueAsString(account)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
     public void createAccountForbidden() throws Exception {
         String username = "";
         Customer customer = Customer.builder().id(12L).username("test").build();

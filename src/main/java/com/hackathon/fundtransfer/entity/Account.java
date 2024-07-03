@@ -21,14 +21,10 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long accountId;
 
-    @NotBlank(message = "Account Number should not be empty")
-    @Size(min = 5, message = "Account number length should be minimum 5")
     private String accountNumber;
 
-    @NotBlank(message = "Account Type should not be empty")
     private String accountType;
 
-    @NotNull(message = "Balance should not be empty")
     private Double balance;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

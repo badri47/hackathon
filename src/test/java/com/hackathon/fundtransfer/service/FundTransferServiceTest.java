@@ -120,7 +120,10 @@ public class FundTransferServiceTest {
         fundTransfer.setTransactionId(1L);
         fundTransfer.setLocalDateTime(LocalDateTime.now());
 
-        assertThrows(CustomException.class, () -> fundTransferService.transferFunds(username, fundTransfer));
+        CustomException customException = assertThrows(CustomException.class,
+                () -> fundTransferService.transferFunds(username, fundTransfer));
+
+        assertEquals("Insufficient Funds to Transfer", customException.getMessage());
 
     }
 
@@ -157,7 +160,10 @@ public class FundTransferServiceTest {
 
         when(this.accountRepository.findByAccountNumber("118002")).thenReturn(Optional.empty());
 
-        assertThrows(DetailsNotFoundException.class, () -> fundTransferService.getTransactionsList(username, "118002"));
+        DetailsNotFoundException detailsNotFoundException = assertThrows(DetailsNotFoundException.class,
+                () -> fundTransferService.getTransactionsList(username, "118002"));
+
+        assertEquals("Account Details not Found", detailsNotFoundException.getMessage());
     }
 
     @Test
@@ -173,7 +179,21 @@ public class FundTransferServiceTest {
 
         when(this.accountRepository.findByAccountNumber(account.getAccountNumber())).thenReturn(Optional.of(account));
 
-        assertThrows(UnAuthorizedException.class, () -> fundTransferService.getTransactionsList(username, "118002"));
+        UnAuthorizedException unAuthorizedException = assertThrows(UnAuthorizedException.class,
+                () -> fundTransferService.getTransactionsList(username, "118002"));
+        assertEquals("UnAuthorized Request", unAuthorizedException.getMessage());
+    }
+
+    @Test
+    void getTransactionsListCustomerNotFound() {
+        String username = "test";
+
+        when(this.customerRepository.findByUsername(username)).thenReturn(Optional.empty());
+
+        CustomException customException = assertThrows(CustomException.class, () ->
+                fundTransferService.getTransactionsList(username, "118002"));
+
+        assertEquals("Customer Not Found", customException.getMessage());
     }
 
 }

@@ -1,6 +1,7 @@
 package com.hackathon.fundtransfer.controller;
 
 import com.hackathon.fundtransfer.dtos.AuthRequest;
+import com.hackathon.fundtransfer.dtos.CustomerRequest;
 import com.hackathon.fundtransfer.dtos.LoginResponse;
 import com.hackathon.fundtransfer.dtos.PayloadResponse;
 import com.hackathon.fundtransfer.entity.Customer;
@@ -38,12 +39,12 @@ public class AuthController {
 
     /**
      * This API is used to register the customer
-     * @param customer customer details
+     * @param customerRequest customer details
      * @return Response
      */
     @PostMapping("/register")
-    public ResponseEntity<PayloadResponse> registerCustomer(@Valid @RequestBody Customer customer) {
-        return new ResponseEntity<>(customerService.registerCustomer(customer), HttpStatus.CREATED);
+    public ResponseEntity<PayloadResponse> registerCustomer(@Valid @RequestBody CustomerRequest customerRequest) {
+        return new ResponseEntity<>(customerService.registerCustomer(customerRequest), HttpStatus.CREATED);
     }
 
     /**

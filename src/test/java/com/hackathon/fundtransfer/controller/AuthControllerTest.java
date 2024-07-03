@@ -2,6 +2,7 @@ package com.hackathon.fundtransfer.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hackathon.fundtransfer.dtos.AuthRequest;
+import com.hackathon.fundtransfer.dtos.CustomerRequest;
 import com.hackathon.fundtransfer.dtos.LoginResponse;
 import com.hackathon.fundtransfer.dtos.PayloadResponse;
 import com.hackathon.fundtransfer.entity.Customer;
@@ -52,47 +53,48 @@ public class AuthControllerTest {
 
         UserDetails userDetails = User.withUsername("testuser").password("123456").authorities(Collections.emptyList()).build();
 
-        AuthRequest authRequest = new AuthRequest("testuser", "123456");
-
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenReturn(authentication);
 
         String token = "mockedToken";
-        when(this.jwtUtil.generateToken(authRequest.getUsername())).thenReturn(token);
+        when(this.jwtUtil.generateToken("testuser")).thenReturn(token);
     }
 
     @Test
     public void registerCustomerSuccess() throws Exception {
-        Customer customer = new Customer();
-        customer.setUsername("test");
-        customer.setPassword("123456");
+
+        CustomerRequest customerRequest = new CustomerRequest();
+        customerRequest.setUsername("test");
+        customerRequest.setPassword("123456");
+        customerRequest.setAccountNumber("1119058");
+        customerRequest.setAccountType("SAVINGS");
+        customerRequest.setBalance(5000.0);
 
         PayloadResponse payloadResponse = new PayloadResponse();
         payloadResponse.setMessage("Customer created successfully with customer Id : "+1L);
 
-        when(this.customerService.registerCustomer(customer)).thenReturn(payloadResponse);
+        when(this.customerService.registerCustomer(customerRequest)).thenReturn(payloadResponse);
 
         this.mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(customer)))
+                        .content(objectMapper.writeValueAsString(customerRequest)))
                 .andExpect(status().isCreated());
     }
 
     @Test
     public void registerCustomerFail() throws Exception {
-        Customer customer = new Customer();
-        customer.setUsername("");
-        customer.setPassword("123456");
+        CustomerRequest customerRequest = new CustomerRequest("", "123456", "", "SAVINGS", 5000.0);
 
         PayloadResponse payloadResponse = new PayloadResponse("Customer not found");
 
-        when(this.customerService.registerCustomer(customer)).thenReturn(payloadResponse);
+        when(this.customerService.registerCustomer(customerRequest)).thenReturn(payloadResponse);
 
-        this.mockMvc.perform(post("/api/auth/register?username="+customer.getUsername()+"&password="+customer.getPassword())
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is(500));
+        this.mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(customerRequest)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -103,12 +105,25 @@ public class AuthControllerTest {
         authRequest.setUsername("testuser");
         authRequest.setPassword("123456");
 
-
-
         this.mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(authRequest)))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void createAuthenticationTokenFail() throws Exception {
+        AuthRequest authRequest = new AuthRequest("", "123456");
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken("", null, null);
+
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(authentication);
+
+        this.mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(authRequest)))
+                .andExpect(status().isInternalServerError());
     }
 
 }

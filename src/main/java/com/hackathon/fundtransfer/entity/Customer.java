@@ -1,5 +1,6 @@
 package com.hackathon.fundtransfer.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
@@ -19,10 +20,9 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotEmpty(message = "UserName should not be empty")
     private String username;
 
-    @NotEmpty(message = "Password should not be empty")
+    @JsonIgnore
     private String password;
 
 }

@@ -10,4 +10,8 @@ class FundTransferApplicationTests {
 	void contextLoads() {
 	}
 
+	@Test
+	void mainTest() {
+		FundTransferApplication.main(new String[] {});
+	}
 }

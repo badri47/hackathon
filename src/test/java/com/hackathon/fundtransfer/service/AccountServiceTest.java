@@ -78,7 +78,9 @@ public class AccountServiceTest {
     void createAccountUnAuthorizedCustomer() {
         String username = "testuser";
 
-        assertThrows(UnAuthorizedException.class, () -> accountService.createAccountForCustomer(username,account));
+        UnAuthorizedException unAuthorizedException = assertThrows(UnAuthorizedException.class,
+                () -> accountService.createAccountForCustomer(username,account));
+        assertEquals("UnAuthorized Customer", unAuthorizedException.getMessage());
     }
 
     @Test
@@ -87,7 +89,9 @@ public class AccountServiceTest {
 
         when(this.accountRepository.findByAccountNumber(anyString())).thenReturn(Optional.of(account));
 
-        assertThrows(CustomException.class, () -> accountService.createAccountForCustomer(username,account));
+        CustomException customException = assertThrows(CustomException.class,
+                () -> accountService.createAccountForCustomer(username,account));
+        assertEquals("Account Number already exists", customException.getMessage());
     }
 
     @Test

@@ -1,7 +1,11 @@
 package com.hackathon.fundtransfer.service;
 
+import com.hackathon.fundtransfer.dtos.CustomerRequest;
+import com.hackathon.fundtransfer.entity.Account;
 import com.hackathon.fundtransfer.entity.Customer;
 import com.hackathon.fundtransfer.dtos.PayloadResponse;
+import com.hackathon.fundtransfer.exception.CustomException;
+import com.hackathon.fundtransfer.repository.AccountRepository;
 import com.hackathon.fundtransfer.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -19,24 +24,42 @@ public class CustomerService implements UserDetailsService {
     private CustomerRepository customerRepository;
 
     @Autowired
+    private AccountRepository accountRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     /**
      * This method is used to write the business logic for register customer
-     * @param customer customer details
+     * @param customerRequest customer details
      * @return Payload response
      */
-    public PayloadResponse registerCustomer(Customer customer) {
+    @Transactional
+    public PayloadResponse registerCustomer(CustomerRequest customerRequest) {
         var response = new PayloadResponse();
-        Optional<Customer> customerInfo = customerRepository.findByUsername(customer.getUsername());
+        Optional<Customer> customerInfo = customerRepository.findByUsername(customerRequest.getUsername());
         if (customerInfo.isEmpty()) {
-            String password = customer.getPassword();
-            customer.setPassword(passwordEncoder.encode(password));
+            Customer customer = new Customer();
+            customer.setUsername(customerRequest.getUsername());
+            customer.setPassword(passwordEncoder.encode(customerRequest.getPassword()));
             Customer customer1 = customerRepository.save(customer);
+
+            Optional<Account> checkAccountExist = accountRepository.findByAccountNumber(customerRequest.getAccountNumber());
+            if (checkAccountExist.isPresent()) {
+                throw new CustomException("Account Number already exists");
+            }
+
+            Account account = new Account();
+            account.setCustomer(customer1);
+            account.setAccountNumber(customerRequest.getAccountNumber());
+            account.setAccountType(customerRequest.getAccountType());
+            account.setBalance(customerRequest.getBalance());
+
+            accountRepository.save(account);
 
             response.setMessage("Customer created successfully with customer Id : "+customer1.getId());
         } else {
-            response.setMessage("Customer already exists with username : "+customer.getUsername());
+            response.setMessage("Customer already exists with username : "+customerRequest.getUsername());
         }
         return response;
     }
