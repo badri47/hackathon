@@ -15,11 +15,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.Collections;
 
@@ -57,7 +59,7 @@ public class AuthControllerTest {
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenReturn(authentication);
 
-        String token = "mockedToken";
+        String token = jwtUtil.generateToken(userDetails.getUsername());
         when(this.jwtUtil.generateToken("testuser")).thenReturn(token);
     }
 
@@ -67,6 +69,10 @@ public class AuthControllerTest {
         CustomerRequest customerRequest = new CustomerRequest();
         customerRequest.setUsername("test");
         customerRequest.setPassword("123456");
+        customerRequest.setFirstName("test");
+        customerRequest.setLastName("test");
+        customerRequest.setEmail("test@gmail.com");
+        customerRequest.setPhoneNumber("7894561230");
         customerRequest.setAccountNumber("1119058");
         customerRequest.setAccountType("SAVINGS");
         customerRequest.setBalance(5000.0);
@@ -84,7 +90,7 @@ public class AuthControllerTest {
 
     @Test
     public void registerCustomerFail() throws Exception {
-        CustomerRequest customerRequest = new CustomerRequest("", "123456", "", "SAVINGS", 5000.0);
+        CustomerRequest customerRequest = new CustomerRequest("", "123456", "test", "test", "test@gmail.com", "8945612307", "", "SAVINGS", 5000.0);
 
         PayloadResponse payloadResponse = new PayloadResponse("Customer not found");
 
@@ -98,8 +104,7 @@ public class AuthControllerTest {
 
     @Test
     public void createAuthenticationTokenSuccess() throws Exception {
-        LoginResponse loginResponse = new LoginResponse("Logged In Successfully", "testuser", "mockedToken");
-
+        LoginResponse loginResponse = new LoginResponse("Logged In Successfully", "testuser", "token");
         AuthRequest authRequest = new AuthRequest();
         authRequest.setUsername("testuser");
         authRequest.setPassword("123456");
@@ -107,7 +112,8 @@ public class AuthControllerTest {
         this.mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(authRequest)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(loginResponse.getMessage()));
     }
 
     @Test
@@ -123,6 +129,19 @@ public class AuthControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(authRequest)))
                 .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    public void createAuthenticationBadCredentials() throws Exception {
+        AuthRequest authRequest = new AuthRequest("test", "123456");
+
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenThrow(new BadCredentialsException("The username or password is incorrect"));
+
+        this.mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(authRequest)))
+                .andExpect(status().isUnauthorized());
     }
 
 }

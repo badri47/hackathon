@@ -50,7 +50,6 @@ public class AuthController {
      * This API is used to log In customer and generate token
      * @param authRequest Auth request
      * @return Login Response
-     * @throws Exception exception
      */
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> createAuthenticationToken(@Valid @RequestBody AuthRequest authRequest) {

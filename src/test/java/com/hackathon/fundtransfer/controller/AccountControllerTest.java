@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hackathon.fundtransfer.entity.Account;
 import com.hackathon.fundtransfer.entity.Customer;
 import com.hackathon.fundtransfer.service.AccountService;
+import com.hackathon.fundtransfer.service.CustomerService;
+import com.hackathon.fundtransfer.util.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -36,25 +40,37 @@ public class AccountControllerTest {
     @MockBean
     private AccountService accountService;
 
-    private Customer customer;
+    @MockBean
+    private CustomerService customerService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     private Account account;
 
+    private String token;
+
+    private UserDetails userDetails;
+
     @BeforeEach
     public void setup() {
-        customer = Customer.builder().id(12L).username("test").build();
+        Customer customer = Customer.builder().id(12L).username("test").build();
         account = Account.builder().accountNumber("118852").accountType("SAVINGS").balance(100.05)
                 .customer(customer).build();
+        token = jwtUtil.generateToken("test");
+        userDetails = User.withUsername("test").password("123456").authorities(Collections.emptyList()).build();
     }
 
     @Test
-    @WithMockUser(username = "test")
     public void createAccountSuccess() throws Exception {
         String username = "test";
 
         when(this.accountService.createAccountForCustomer(username, account)).thenReturn(account);
 
+        when(this.customerService.loadUserByUsername(username)).thenReturn(userDetails);
+
         this.mockMvc.perform(post("/account/")
+                .header("Authorization", "Bearer "+token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(csrf())
                 .content(objectMapper.writeValueAsString(account)))

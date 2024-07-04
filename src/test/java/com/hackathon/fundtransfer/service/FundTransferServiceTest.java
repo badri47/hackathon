@@ -46,7 +46,7 @@ public class FundTransferServiceTest {
     public void setup() {
         customer = Customer.builder().id(12L).username("test").build();
         fundTransfer = FundTransfer.builder().transactionId(1L).fromAccount("118002").toAccount("988960")
-                .amount(500.0).customer(customer).build();
+                .amount(500.0).comment("test test").customer(customer).build();
 
     }
 

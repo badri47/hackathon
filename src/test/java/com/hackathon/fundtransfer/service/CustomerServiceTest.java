@@ -42,6 +42,10 @@ public class CustomerServiceTest {
         customerRequest = new CustomerRequest();
         customerRequest.setUsername("test");
         customerRequest.setPassword("123456");
+        customerRequest.setFirstName("test");
+        customerRequest.setLastName("test");
+        customerRequest.setEmail("test@gmail.com");
+        customerRequest.setPhoneNumber("7894561230");
         customerRequest.setAccountNumber("1119058");
         customerRequest.setAccountType("SAVINGS");
         customerRequest.setBalance(5000.0);
@@ -58,6 +62,10 @@ public class CustomerServiceTest {
         Customer customer = new Customer();
         customer.setUsername(customerRequest.getUsername());
         customer.setPassword(passwordEncoder.encode(customerRequest.getPassword()));
+        customer.setFirstName(customerRequest.getFirstName());
+        customer.setLastName(customerRequest.getLastName());
+        customer.setEmail(customerRequest.getEmail());
+        customer.setPhoneNumber(customerRequest.getPhoneNumber());
 
         Customer customer1 = Customer.builder().id(1L).username(customerRequest.getUsername()).build();
         when(customerRepository.save(customer)).thenReturn(customer1);

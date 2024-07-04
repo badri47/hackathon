@@ -42,6 +42,10 @@ public class CustomerService implements UserDetailsService {
             Customer customer = new Customer();
             customer.setUsername(customerRequest.getUsername());
             customer.setPassword(passwordEncoder.encode(customerRequest.getPassword()));
+            customer.setFirstName(customerRequest.getFirstName());
+            customer.setLastName(customerRequest.getLastName());
+            customer.setEmail(customerRequest.getEmail());
+            customer.setPhoneNumber(customerRequest.getPhoneNumber());
             Customer customer1 = customerRepository.save(customer);
 
             Optional<Account> checkAccountExist = accountRepository.findByAccountNumber(customerRequest.getAccountNumber());

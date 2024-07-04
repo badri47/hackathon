@@ -30,6 +30,8 @@ public class FundTransfer {
 
     @NotNull(message = "Amount should not be empty")
     private Double amount;
+
+    private String comment;
     private LocalDateTime localDateTime;
 
     @ManyToOne

@@ -5,8 +5,11 @@ import com.hackathon.fundtransfer.dtos.PayloadResponse;
 import com.hackathon.fundtransfer.entity.Customer;
 import com.hackathon.fundtransfer.entity.FundTransfer;
 import com.hackathon.fundtransfer.service.FundTransferService;
+import com.hackathon.fundtransfer.util.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +19,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,12 +41,20 @@ public class FundTransferControllerTest {
 
     @MockBean
     private FundTransferService fundTransferService;
+
+    @Mock
+    private HttpServletRequest request;
+
+    @Mock
+    private JwtUtil jwtUtil;
+
     private FundTransfer fundTransfer;
 
     @BeforeEach
     public void setup() {
         Customer customer = Customer.builder().id(12L).username("test").build();
-        fundTransfer = FundTransfer.builder().transactionId(1L).fromAccount("118002").toAccount("988960").amount(500.0)
+        fundTransfer = FundTransfer.builder().transactionId(1L).fromAccount("118002").toAccount("988960")
+                .amount(500.0).comment("test test")
                 .customer(customer).build();
     }
 
@@ -104,5 +116,19 @@ public class FundTransferControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .with(csrf()))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(username = "test")
+    public void transactionListDetailsNotFoundException() throws Exception {
+        String username = "test";
+        String accountNumber = "";
+        List<FundTransfer> transactionsList = new ArrayList<>();
+        when(this.fundTransferService.getTransactionsList(username, accountNumber)).thenReturn(transactionsList);
+
+        this.mockMvc.perform(get("/fundTransfer/transactions/"+accountNumber)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .with(csrf()))
+                .andExpect(status().is(500));
     }
 }
