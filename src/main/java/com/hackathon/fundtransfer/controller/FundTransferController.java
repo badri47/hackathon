@@ -1,6 +1,7 @@
 package com.hackathon.fundtransfer.controller;
 
 import com.hackathon.fundtransfer.dtos.PayloadResponse;
+import com.hackathon.fundtransfer.dtos.TransactionResponse;
 import com.hackathon.fundtransfer.entity.FundTransfer;
 import com.hackathon.fundtransfer.exception.CustomException;
 import com.hackathon.fundtransfer.service.FundTransferService;
@@ -49,7 +50,7 @@ public class FundTransferController {
      * @return Transactions List
      */
     @GetMapping("/transactions/{accountNumber}")
-    public ResponseEntity<List<FundTransfer>> transactionsList(Principal principal, @PathVariable String accountNumber) {
+    public ResponseEntity<List<TransactionResponse>> transactionsList(Principal principal, @PathVariable String accountNumber) {
         String username = principal.getName();
         return new ResponseEntity<>(fundTransferService.getTransactionsList(username, accountNumber), HttpStatus.OK);
     }

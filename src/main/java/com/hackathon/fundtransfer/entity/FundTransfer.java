@@ -1,5 +1,6 @@
 package com.hackathon.fundtransfer.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -22,11 +23,13 @@ public class FundTransfer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long transactionId;
 
-    @NotBlank(message = "From Account should not be empty")
-    private String fromAccount;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "fromAccountId", nullable = false)
+    private Account fromAccount;
 
-    @NotBlank(message = "To Account should not be empty")
-    private String toAccount;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "toAccountId", nullable = false)
+    private Account toAccount;
 
     @NotNull(message = "Amount should not be empty")
     private Double amount;
@@ -34,6 +37,6 @@ public class FundTransfer {
     private String comment;
     private LocalDateTime localDateTime;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private Customer customer;
 }

@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface FundTransferRepository extends JpaRepository<FundTransfer, Long> {
-    List<FundTransfer> findByFromAccountOrToAccount(String fromAccount, String toAccount);
+    List<FundTransfer> findByFromAccountIdOrToAccountId(Long fromAccountId, Long toAccountId);
 }

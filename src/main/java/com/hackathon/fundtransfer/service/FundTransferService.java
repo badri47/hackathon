@@ -1,5 +1,6 @@
 package com.hackathon.fundtransfer.service;
 
+import com.hackathon.fundtransfer.dtos.TransactionResponse;
 import com.hackathon.fundtransfer.entity.Account;
 import com.hackathon.fundtransfer.entity.Customer;
 import com.hackathon.fundtransfer.entity.FundTransfer;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -42,9 +44,9 @@ public class FundTransferService {
     @Transactional
     public FundTransfer transferFunds(String username, FundTransfer fundTransfer) throws Exception {
 
-        Account fromAccount = accountRepository.findByAccountNumber(fundTransfer.getFromAccount())
+        Account fromAccount = accountRepository.findByAccountNumber(fundTransfer.getFromAccount().getAccountNumber())
                 .orElseThrow(() -> new Exception("From Account Not Found"));
-        Account toAccount = accountRepository.findByAccountNumber(fundTransfer.getToAccount())
+        Account toAccount = accountRepository.findByAccountNumber(fundTransfer.getToAccount().getAccountNumber())
                 .orElseThrow(() -> new Exception("To Account Not Found"));
 
         if (!fromAccount.getCustomer().getUsername().equals(username)) {
@@ -73,15 +75,27 @@ public class FundTransferService {
      * @param accountNumber Account Number
      * @return Transactions List
      */
-    public List<FundTransfer> getTransactionsList(String username, String accountNumber) {
-        List<FundTransfer> transactionsList;
+    public List<TransactionResponse> getTransactionsList(String username, String accountNumber) {
+        List<TransactionResponse> transactionsList = new ArrayList<>();
         Customer customer = customerRepository.findByUsername(username)
                 .orElseThrow(() -> new CustomException("Customer Not Found"));
         Account account = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new DetailsNotFoundException("Account Details not Found"));
         if (account.getCustomer().getId().equals(customer.getId())) {
-            transactionsList = fundTransferRepository.
-                    findByFromAccountOrToAccount(accountNumber, accountNumber);
+            List<FundTransfer> fundTransferList = fundTransferRepository.
+                    findByFromAccountIdOrToAccountId(account.getId(), account.getId());
+            if (!fundTransferList.isEmpty()) {
+                fundTransferList.forEach(fundTransfer -> {
+                    var transactionResponse = new TransactionResponse();
+                    transactionResponse.setTransactionId(fundTransfer.getTransactionId());
+                    transactionResponse.setFromAccount(fundTransfer.getFromAccount().getAccountNumber());
+                    transactionResponse.setToAccount(fundTransfer.getToAccount().getAccountNumber());
+                    transactionResponse.setAmount(fundTransfer.getAmount());
+                    transactionResponse.setComment(fundTransfer.getComment());
+                    transactionResponse.setTransactionDate(fundTransfer.getLocalDateTime());
+                    transactionsList.add(transactionResponse);
+                });
+            }
         } else {
             throw new UnAuthorizedException("UnAuthorized Request");
         }

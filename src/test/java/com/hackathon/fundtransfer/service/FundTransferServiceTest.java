@@ -1,5 +1,6 @@
 package com.hackathon.fundtransfer.service;
 
+import com.hackathon.fundtransfer.dtos.TransactionResponse;
 import com.hackathon.fundtransfer.entity.Account;
 import com.hackathon.fundtransfer.entity.Customer;
 import com.hackathon.fundtransfer.entity.FundTransfer;
@@ -45,8 +46,12 @@ public class FundTransferServiceTest {
     @BeforeEach
     public void setup() {
         customer = Customer.builder().id(12L).username("test").build();
-        fundTransfer = FundTransfer.builder().transactionId(1L).fromAccount("118002").toAccount("988960")
-                .amount(500.0).comment("test test").customer(customer).build();
+        Account fromAccount = Account.builder().id(1L).accountNumber("118002")
+                .balance(5000.0).accountType("SAVINGS").build();
+        Account toAccount = Account.builder().id(2L).accountNumber("988960")
+                .balance(6000.0).accountType("SAVINGS").build();
+        fundTransfer = FundTransfer.builder().transactionId(1L).fromAccount(fromAccount).toAccount(toAccount)
+                .amount(500.0).comment("test test").build();
 
     }
 
@@ -54,18 +59,18 @@ public class FundTransferServiceTest {
     void transferFundsSuccess() throws Exception {
         String username = "test";
 
-        Account fromAcc = Account.builder().accountId(1L).accountNumber("118002")
+        Account fromAcc = Account.builder().id(1L).accountNumber("118002")
                 .accountType("SAVINGS").balance(5000.0).customer(customer).build();
 
         Customer customerInfo = Customer.builder().id(13L).username("test1").build();
 
-        Account toAcc = Account.builder().accountId(2L).accountNumber("988960")
+        Account toAcc = Account.builder().id(2L).accountNumber("988960")
                 .accountType("SAVINGS").balance(3000.0).customer(customerInfo).build();
 
-        when(this.accountRepository.findByAccountNumber(fundTransfer.getFromAccount()))
+        when(this.accountRepository.findByAccountNumber(fundTransfer.getFromAccount().getAccountNumber()))
                 .thenReturn(Optional.of(fromAcc));
 
-        when(this.accountRepository.findByAccountNumber(fundTransfer.getToAccount()))
+        when(this.accountRepository.findByAccountNumber(fundTransfer.getToAccount().getAccountNumber()))
                 .thenReturn(Optional.of(toAcc));
 
         fundTransfer.setTransactionId(1L);
@@ -82,18 +87,18 @@ public class FundTransferServiceTest {
     @Test
     void transferFundsUnAuthorizedCustomer() {
         String username = "test2";
-        Account fromAcc = Account.builder().accountId(1L).accountNumber("118002")
+        Account fromAcc = Account.builder().id(1L).accountNumber("118002")
                 .accountType("SAVINGS").balance(5000.0).customer(customer).build();
 
         Customer customerInfo = Customer.builder().id(13L).username("test1").build();
 
-        Account toAcc = Account.builder().accountId(2L).accountNumber("988960")
+        Account toAcc = Account.builder().id(2L).accountNumber("988960")
                 .accountType("SAVINGS").balance(3000.0).customer(customerInfo).build();
 
-        when(this.accountRepository.findByAccountNumber(fundTransfer.getFromAccount()))
+        when(this.accountRepository.findByAccountNumber(fundTransfer.getFromAccount().getAccountNumber()))
                 .thenReturn(Optional.of(fromAcc));
 
-        when(this.accountRepository.findByAccountNumber(fundTransfer.getToAccount()))
+        when(this.accountRepository.findByAccountNumber(fundTransfer.getToAccount().getAccountNumber()))
                 .thenReturn(Optional.of(toAcc));
 
         assertThrows(UnAuthorizedException.class, () -> fundTransferService.transferFunds(username, fundTransfer));
@@ -103,18 +108,18 @@ public class FundTransferServiceTest {
     void transferFundsInsufficientFunds() {
         String username = "test";
 
-        Account fromAcc = Account.builder().accountId(1L).accountNumber("118002")
+        Account fromAcc = Account.builder().id(1L).accountNumber("118002")
                 .accountType("SAVINGS").balance(400.0).customer(customer).build();
 
         Customer customerInfo = Customer.builder().id(13L).username("test1").build();
 
-        Account toAcc = Account.builder().accountId(2L).accountNumber("988960")
+        Account toAcc = Account.builder().id(2L).accountNumber("988960")
                 .accountType("SAVINGS").balance(3000.0).customer(customerInfo).build();
 
-        when(this.accountRepository.findByAccountNumber(fundTransfer.getFromAccount()))
+        when(this.accountRepository.findByAccountNumber(fundTransfer.getFromAccount().getAccountNumber()))
                 .thenReturn(Optional.of(fromAcc));
 
-        when(this.accountRepository.findByAccountNumber(fundTransfer.getToAccount()))
+        when(this.accountRepository.findByAccountNumber(fundTransfer.getToAccount().getAccountNumber()))
                 .thenReturn(Optional.of(toAcc));
 
         fundTransfer.setTransactionId(1L);
@@ -132,7 +137,7 @@ public class FundTransferServiceTest {
         List<FundTransfer> transactionsList = new ArrayList<>();
         String username = "test";
 
-        Account account = Account.builder().accountId(1L).accountNumber("118002")
+        Account account = Account.builder().id(1L).accountNumber("118002")
                 .accountType("SAVINGS").balance(5000.0).customer(customer).build();
 
         when(this.customerRepository.findByUsername(username)).thenReturn(Optional.ofNullable(customer));
@@ -143,10 +148,10 @@ public class FundTransferServiceTest {
         fundTransfer.setLocalDateTime(LocalDateTime.now());
         transactionsList.add(fundTransfer);
 
-        when(this.fundTransferRepository.findByFromAccountOrToAccount(account.getAccountNumber(),
-                account.getAccountNumber())).thenReturn(transactionsList);
+        when(this.fundTransferRepository.findByFromAccountIdOrToAccountId(account.getId(),
+                account.getId())).thenReturn(transactionsList);
 
-        List<FundTransfer> transactionsList1 = fundTransferService.getTransactionsList(username, account.getAccountNumber());
+        List<TransactionResponse> transactionsList1 = fundTransferService.getTransactionsList(username, account.getAccountNumber());
 
         assertEquals(transactionsList1.size(), transactionsList.size());
 
@@ -172,7 +177,7 @@ public class FundTransferServiceTest {
 
         Customer customer1 = Customer.builder().id(2L).username("testuser").password("123456").build();
 
-        Account account = Account.builder().accountId(1L).accountNumber("118002")
+        Account account = Account.builder().id(1L).accountNumber("118002")
                 .accountType("SAVINGS").balance(5000.0).customer(customer).build();
 
         when(this.customerRepository.findByUsername(username)).thenReturn(Optional.ofNullable(customer1));

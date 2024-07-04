@@ -2,6 +2,8 @@ package com.hackathon.fundtransfer.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hackathon.fundtransfer.dtos.PayloadResponse;
+import com.hackathon.fundtransfer.dtos.TransactionResponse;
+import com.hackathon.fundtransfer.entity.Account;
 import com.hackathon.fundtransfer.entity.Customer;
 import com.hackathon.fundtransfer.entity.FundTransfer;
 import com.hackathon.fundtransfer.service.FundTransferService;
@@ -53,7 +55,11 @@ public class FundTransferControllerTest {
     @BeforeEach
     public void setup() {
         Customer customer = Customer.builder().id(12L).username("test").build();
-        fundTransfer = FundTransfer.builder().transactionId(1L).fromAccount("118002").toAccount("988960")
+        Account fromAccount = Account.builder().id(1L).accountNumber("118002")
+                .balance(5000.0).accountType("SAVINGS").build();
+        Account toAccount = Account.builder().id(2L).accountNumber("988960")
+                .balance(6000.0).accountType("SAVINGS").build();
+        fundTransfer = FundTransfer.builder().transactionId(1L).fromAccount(fromAccount).toAccount(toAccount)
                 .amount(500.0).comment("test test")
                 .customer(customer).build();
     }
@@ -108,7 +114,9 @@ public class FundTransferControllerTest {
     public void transactionsListSuccess() throws Exception {
         String username = "test";
 
-        List<FundTransfer> transactionsList = Collections.singletonList(fundTransfer);
+        List<FundTransfer> fundTransferList = Collections.singletonList(fundTransfer);
+        TransactionResponse transactionResponse = getTransactionResponse();
+        List<TransactionResponse> transactionsList = Collections.singletonList(transactionResponse);
         String accountNumber = "213546";
         when(this.fundTransferService.getTransactionsList(username, accountNumber)).thenReturn(transactionsList);
 
@@ -118,12 +126,23 @@ public class FundTransferControllerTest {
                 .andExpect(status().isOk());
     }
 
+    private TransactionResponse getTransactionResponse() {
+        TransactionResponse transactionResponse = new TransactionResponse();
+        transactionResponse.setTransactionId(fundTransfer.getTransactionId());
+        transactionResponse.setFromAccount(fundTransfer.getFromAccount().getAccountNumber());
+        transactionResponse.setToAccount(fundTransfer.getToAccount().getAccountNumber());
+        transactionResponse.setAmount(fundTransfer.getAmount());
+        transactionResponse.setTransactionDate(fundTransfer.getLocalDateTime());
+        transactionResponse.setComment(fundTransfer.getComment());
+        return transactionResponse;
+    }
+
     @Test
     @WithMockUser(username = "test")
     public void transactionListDetailsNotFoundException() throws Exception {
         String username = "test";
         String accountNumber = "";
-        List<FundTransfer> transactionsList = new ArrayList<>();
+        List<TransactionResponse> transactionsList = new ArrayList<>();
         when(this.fundTransferService.getTransactionsList(username, accountNumber)).thenReturn(transactionsList);
 
         this.mockMvc.perform(get("/fundTransfer/transactions/"+accountNumber)
