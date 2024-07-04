@@ -32,7 +32,7 @@ public class FundTransfer {
     private Double amount;
 
     private String comment;
-    private LocalDateTime localDateTime;
+    private LocalDateTime transactionDate;
 
     @ManyToOne
     private Customer customer;

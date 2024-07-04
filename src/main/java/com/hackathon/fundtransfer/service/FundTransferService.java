@@ -61,7 +61,7 @@ public class FundTransferService {
         accountRepository.save(fromAccount);
         accountRepository.save(toAccount);
 
-        fundTransfer.setLocalDateTime(LocalDateTime.now());
+        fundTransfer.setTransactionDate(LocalDateTime.now());
 
         return fundTransferRepository.save(fundTransfer);
     }
