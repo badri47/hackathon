@@ -74,7 +74,7 @@ public class FundTransferServiceTest {
                 .thenReturn(Optional.of(toAcc));
 
         fundTransfer.setTransactionId(1L);
-        fundTransfer.setLocalDateTime(LocalDateTime.now());
+        fundTransfer.setTransactionDate(LocalDateTime.now());
 
         when(this.fundTransferRepository.save(fundTransfer)).thenReturn(fundTransfer);
 
@@ -123,7 +123,7 @@ public class FundTransferServiceTest {
                 .thenReturn(Optional.of(toAcc));
 
         fundTransfer.setTransactionId(1L);
-        fundTransfer.setLocalDateTime(LocalDateTime.now());
+        fundTransfer.setTransactionDate(LocalDateTime.now());
 
         CustomException customException = assertThrows(CustomException.class,
                 () -> fundTransferService.transferFunds(username, fundTransfer));
@@ -145,7 +145,7 @@ public class FundTransferServiceTest {
         when(this.accountRepository.findByAccountNumber(account.getAccountNumber())).thenReturn(Optional.of(account));
 
         fundTransfer.setTransactionId(1L);
-        fundTransfer.setLocalDateTime(LocalDateTime.now());
+        fundTransfer.setTransactionDate(LocalDateTime.now());
         transactionsList.add(fundTransfer);
 
         when(this.fundTransferRepository.findByFromAccountIdOrToAccountId(account.getId(),

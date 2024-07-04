@@ -114,7 +114,6 @@ public class FundTransferControllerTest {
     public void transactionsListSuccess() throws Exception {
         String username = "test";
 
-        List<FundTransfer> fundTransferList = Collections.singletonList(fundTransfer);
         TransactionResponse transactionResponse = getTransactionResponse();
         List<TransactionResponse> transactionsList = Collections.singletonList(transactionResponse);
         String accountNumber = "213546";
@@ -132,7 +131,7 @@ public class FundTransferControllerTest {
         transactionResponse.setFromAccount(fundTransfer.getFromAccount().getAccountNumber());
         transactionResponse.setToAccount(fundTransfer.getToAccount().getAccountNumber());
         transactionResponse.setAmount(fundTransfer.getAmount());
-        transactionResponse.setTransactionDate(fundTransfer.getLocalDateTime());
+        transactionResponse.setTransactionDate(fundTransfer.getTransactionDate());
         transactionResponse.setComment(fundTransfer.getComment());
         return transactionResponse;
     }

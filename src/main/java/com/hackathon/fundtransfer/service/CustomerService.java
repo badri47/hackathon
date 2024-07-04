@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -46,6 +47,7 @@ public class CustomerService implements UserDetailsService {
             customer.setLastName(customerRequest.getLastName());
             customer.setEmail(customerRequest.getEmail());
             customer.setPhoneNumber(customerRequest.getPhoneNumber());
+
             Customer customer1 = customerRepository.save(customer);
 
             Optional<Account> checkAccountExist = accountRepository.findByAccountNumber(customerRequest.getAccountNumber());

@@ -63,7 +63,7 @@ public class FundTransferService {
         accountRepository.save(fromAccount);
         accountRepository.save(toAccount);
 
-        fundTransfer.setLocalDateTime(LocalDateTime.now());
+        fundTransfer.setTransactionDate(LocalDateTime.now());
 
         return fundTransferRepository.save(fundTransfer);
     }
@@ -92,7 +92,7 @@ public class FundTransferService {
                     transactionResponse.setToAccount(fundTransfer.getToAccount().getAccountNumber());
                     transactionResponse.setAmount(fundTransfer.getAmount());
                     transactionResponse.setComment(fundTransfer.getComment());
-                    transactionResponse.setTransactionDate(fundTransfer.getLocalDateTime());
+                    transactionResponse.setTransactionDate(fundTransfer.getTransactionDate());
                     transactionsList.add(transactionResponse);
                 });
             }
